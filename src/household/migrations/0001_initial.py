@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('currency', '0001_initial'),
     ]
 
     operations = [
@@ -21,6 +22,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=128)),
+                ('default_currency', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='default_currency_households', to='currency.Currency')),
             ],
         ),
         migrations.CreateModel(

@@ -1,3 +1,5 @@
+from account.models import Account
+from currency.models import Currency
 from household.models import Household
 from tag.models import Tag
 
@@ -6,6 +8,9 @@ from django.db import models
 from django.utils import timezone
 
 class JournalEntry(models.Model):
+  class Meta:
+    verbose_name_plural = "Journal entries"
+
   description = models.TextField(blank=True, default="")
   creation_time = models.DateTimeField()
   booking_time = models.DateTimeField()
@@ -15,6 +20,18 @@ class JournalEntry(models.Model):
   )
   household = models.ForeignKey(
     Household, related_name="journal_entries", on_delete=models.CASCADE
+  )
+  debit_account = models.ForeignKey(
+    Account, related_name="debit_journal_entries", on_delete=models.CASCADE,
+    blank=True, null=True, default=None
+  )
+  credit_account = models.ForeignKey(
+    Account, related_name="credit_journal_entries", on_delete=models.CASCADE,
+    blank=True, null=True, default=None
+  )
+  value = models.PositiveIntegerField(default=0)
+  currency = models.ForeignKey(
+    Currency, related_name="journal_entries", on_delete=models.CASCADE
   )
 
   def __str__(self):

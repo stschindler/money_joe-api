@@ -15,6 +15,8 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('tag', '0001_initial'),
         ('household', '0001_initial'),
+        ('account', '0001_initial'),
+        ('currency', '0001_initial'),
     ]
 
     operations = [
@@ -28,7 +30,12 @@ class Migration(migrations.Migration):
                 ('valuta_time', models.DateTimeField()),
                 ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_journal_entries', to=settings.AUTH_USER_MODEL)),
                 ('household', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='journal_entries', to='household.Household')),
+                ('debit_account', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='debit_journal_entries', to='account.Account')),
+                ('credit_account', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='credit_journal_entries', to='account.Account')),
+                ('value', models.PositiveIntegerField(default=0)),
+                ('currency', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='journal_entries', to='currency.Currency')),
             ],
+            options={'verbose_name_plural': 'Journal entries'},
         ),
         migrations.CreateModel(
             name='JournalEntryTag',
