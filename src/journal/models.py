@@ -1,3 +1,4 @@
+from account.models import Account
 from household.models import Household
 from tag.models import Tag
 
@@ -15,6 +16,13 @@ class JournalEntry(models.Model):
   )
   household = models.ForeignKey(
     Household, related_name="journal_entries", on_delete=models.CASCADE
+  )
+  source_account = models.ForeignKey(
+    Account, related_name="source_journal_entries", on_delete=models.CASCADE,
+    blank=True, null=True, default=None
+  )
+  target_account = models.ForeignKey(
+    Account, related_name="target_journal_entries", on_delete=models.CASCADE
   )
 
   def __str__(self):
