@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 ('valuta_time', models.DateTimeField()),
                 ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_journal_entries', to=settings.AUTH_USER_MODEL)),
                 ('household', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='journal_entries', to='household.Household')),
-                ('source_account', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='source_journal_entries', to='account.Account')),
-                ('target_account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='target_journal_entries', to='account.Account')),
+                ('debit_account', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='debit_journal_entries', to='account.Account')),
+                ('credit_account', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='credit_journal_entries', to='account.Account')),
             ],
         ),
         migrations.CreateModel(

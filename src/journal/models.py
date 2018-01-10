@@ -17,12 +17,13 @@ class JournalEntry(models.Model):
   household = models.ForeignKey(
     Household, related_name="journal_entries", on_delete=models.CASCADE
   )
-  source_account = models.ForeignKey(
-    Account, related_name="source_journal_entries", on_delete=models.CASCADE,
+  debit_account = models.ForeignKey(
+    Account, related_name="debit_journal_entries", on_delete=models.CASCADE,
     blank=True, null=True, default=None
   )
-  target_account = models.ForeignKey(
-    Account, related_name="target_journal_entries", on_delete=models.CASCADE
+  credit_account = models.ForeignKey(
+    Account, related_name="credit_journal_entries", on_delete=models.CASCADE,
+    blank=True, null=True, default=None
   )
 
   def __str__(self):
