@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
   "household",
   "tag",
+  "account",
   "journal",
 ]
 
