@@ -7,6 +7,9 @@ from django.db import models
 from django.utils import timezone
 
 class JournalEntry(models.Model):
+  class Meta:
+    verbose_name_plural = "Journal entries"
+
   description = models.TextField(blank=True, default="")
   creation_time = models.DateTimeField()
   booking_time = models.DateTimeField()
