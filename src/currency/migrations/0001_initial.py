@@ -20,5 +20,6 @@ class Migration(migrations.Migration):
                 ('iso_code', models.CharField(max_length=3, unique=True)),
                 ('symbol', models.CharField(max_length=4)),
             ],
+            options={"verbose_name_plural": "Currencies"},
         ),
     ]
