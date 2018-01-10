@@ -8,6 +8,9 @@ class Household(models.Model):
     return self.name
 
 class HouseholdMembership(models.Model):
+  class Meta:
+    unique_together = (("household", "user"),)
+
   class Level:
     ADMIN = 0
     USER = 1

@@ -13,6 +13,9 @@ class JournalEntry(models.Model):
   creator = models.ForeignKey(
     User, related_name="created_journal_entries", on_delete=models.CASCADE
   )
+  household = models.ForeignKey(
+    Household, related_name="journal_entries", on_delete=models.CASCADE
+  )
 
   def __str__(self):
     return str(self.description)

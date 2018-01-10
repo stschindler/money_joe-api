@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('tag', '0001_initial'),
+        ('household', '0001_initial'),
     ]
 
     operations = [
@@ -26,6 +27,7 @@ class Migration(migrations.Migration):
                 ('booking_time', models.DateTimeField()),
                 ('valuta_time', models.DateTimeField()),
                 ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_journal_entries', to=settings.AUTH_USER_MODEL)),
+                ('household', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='journal_entries', to='household.Household')),
             ],
         ),
         migrations.CreateModel(
