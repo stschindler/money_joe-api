@@ -8,8 +8,8 @@ class JournalEntryTagInline(admin.TabularInline):
 
 class JournalEntryAdmin(admin.ModelAdmin):
   list_display = (
-    "id", "description", "creation_time", "booking_time", "valuta_time",
-    "creator"
+    "description", "creation_time", "booking_time", "valuta_time",
+    "household", "creator", "id"
   )
   list_filter = ("creation_time", "booking_time", "valuta_time")
   raw_id_fields = ("creator",)
