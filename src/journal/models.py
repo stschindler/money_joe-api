@@ -1,4 +1,5 @@
 from account.models import Account
+from currency.models import Currency
 from household.models import Household
 from tag.models import Tag
 
@@ -27,6 +28,10 @@ class JournalEntry(models.Model):
   credit_account = models.ForeignKey(
     Account, related_name="credit_journal_entries", on_delete=models.CASCADE,
     blank=True, null=True, default=None
+  )
+  value = models.PositiveIntegerField(default=0)
+  currency = models.ForeignKey(
+    Currency, related_name="journal_entries", on_delete=models.CASCADE
   )
 
   def __str__(self):

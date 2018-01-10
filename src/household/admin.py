@@ -3,7 +3,7 @@ from . import models
 from django.contrib import admin
 
 class HouseholdAdmin(admin.ModelAdmin):
-  list_display = ("name", "id")
+  list_display = ("name", "default_currency", "id")
   list_filter = ()
   raw_id_fields = ()
   search_fields = ("name",)
