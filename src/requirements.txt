@@ -3,4 +3,3 @@ psycopg2==2.7.3.2
 graphene==2.0.1
 graphene_django==2.0.0
 django-environ==0.4.4
-gunicorn==19.7.1
