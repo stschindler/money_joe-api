@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cp "${MJOE_ENV_FILE}" "/app/src/.env"
+gunicorn money_joe.wsgi --log-file - --bind 0.0.0.0:8000
