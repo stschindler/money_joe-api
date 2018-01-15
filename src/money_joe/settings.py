@@ -11,9 +11,9 @@ DEBUG = env("MJOE_DEBUG", default=False)
 SECRET_KEY = env("MJOE_SECRET_KEY")
 ALLOWED_HOSTS = env.list("MJOE_ALLOWED_HOSTS", default=["*"])
 STATIC_URL = env("MJOE_STATIC_URL", default="/static/")
-STATIC_ROOT = env.path("MJOE_STATIC_ROOT", default="public/static")
+STATIC_ROOT = env("MJOE_STATIC_ROOT", default="public/static")
 MEDIA_URL = env("MJOE_MEDIA_URL", default="/media/")
-MEDIA_ROOT = env.path("MJOE_MEDIA_ROOT", default="public/media")
+MEDIA_ROOT = env("MJOE_MEDIA_ROOT", default="public/media")
 
 DATABASES = {"default": env.db("MJOE_DATABASE")}
 
