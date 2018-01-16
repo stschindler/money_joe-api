@@ -1,9 +1,15 @@
+from . import types
+
 import graphene
 
 class Query(graphene.ObjectType):
-  hello_world = graphene.String()
+  me = graphene.Field(types.MeType)
 
-  def resolve_hello_world(info, request):
-    return "Hello World"
+  def resolve_me(instance, info):
+    return (
+      info.context.user
+      if info.context.user.is_authenticated is True
+      else None
+    )
 
 schema = graphene.Schema(query=Query)
