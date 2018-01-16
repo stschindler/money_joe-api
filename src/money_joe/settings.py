@@ -33,11 +33,15 @@ INSTALLED_APPS = [
   "django.contrib.messages",
   "django.contrib.staticfiles",
 
+  "graphene",
+  "graphene_django",
+
   "currency",
   "household",
   "tag",
   "account",
   "journal",
+  "graphql_api",
 ]
 
 MIDDLEWARE = [
