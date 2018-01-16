@@ -1,6 +1,9 @@
 #!/bin/sh
 
-cp "${MJOE_ENV_FILE}" "/app/src/.env"
+if [ "${MJOE_ENV_FILE}" != "" ]; then
+  cp "${MJOE_ENV_FILE}" "/app/src/.env"
+fi
+
 python3 manage.py collectstatic --no-input
 
 gunicorn money_joe.wsgi --log-file - --bind 0.0.0.0:8000
