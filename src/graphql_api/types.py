@@ -1,12 +1,16 @@
 import graphene
 
+class CurrencyType(graphene.ObjectType):
+  iso_code = graphene.String(required=True)
+  symbol = graphene.String(required=True)
+
 class OwnerJournalEntryType(graphene.ObjectType):
   description = graphene.String()
   creation_time = graphene.types.datetime.DateTime(required=True)
   booking_time = graphene.types.datetime.DateTime(required=True)
   valuta_time = graphene.types.datetime.DateTime(required=True)
   value = graphene.Int(required=True)
-  #currency
+  currency = graphene.Field(CurrencyType)
 
 class MeType(graphene.ObjectType):
   username = graphene.String(required=True)
