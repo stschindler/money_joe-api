@@ -11,6 +11,7 @@ class Household(graphene.ObjectType):
   name = graphene.String(required=True)
 
   @classmethod
+  @decorators.node_resource
   def get_node(cls, info, id):
     result = None
 
@@ -20,7 +21,7 @@ class Household(graphene.ObjectType):
         .first()
 
       if household is not None:
-        result = Household(id=household.id, name=household.name)
+        result = household
 
     return result
 
