@@ -48,7 +48,8 @@ class Query(graphene.ObjectType):
       else None
     )
 
-  def resolve_households(instance, info):
+  @decorators.limited_pagination
+  def resolve_households(instance, info, *args, **kwargs):
     households = []
 
     if info.context.user.is_authenticated is True:
