@@ -36,6 +36,7 @@ INSTALLED_APPS = [
   "graphene",
   "graphene_django",
 
+  "joetils",
   "registration",
   "currency",
   "household",
