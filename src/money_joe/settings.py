@@ -25,6 +25,14 @@ USE_TZ = True
 ROOT_URLCONF = "money_joe.urls"
 WSGI_APPLICATION = "money_joe.wsgi.application"
 
+EMAIL_HOST = env("MJOE_EMAIL_HOST", default="localhost")
+EMAIL_PORT = int(env("MJOE_EMAIL_PORT", default=587))
+EMAIL_HOST_USER = env("MJOE_EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("MJOE_EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = env.bool("MJOE_EMAIL_USE_TLS", default=True)
+EMAIL_SUBJECT_PREFIX = \
+  env("MJOE_EMAIL_SUBJECT_PREFIX", default="[MoneyJoe] ")
+
 INSTALLED_APPS = [
   "django.contrib.admin",
   "django.contrib.auth",
@@ -37,6 +45,8 @@ INSTALLED_APPS = [
   "graphene_django",
 
   "joetils",
+  "geo",
+  "mail",
   "registration",
   "currency",
   "household",
