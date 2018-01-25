@@ -3,10 +3,7 @@ from geo.models import Language
 from django.db import models
 
 class MailSignature(models.Model):
-  language = models.ForeignKey(
-    Language, related_name="mail_signatures", on_delete=models.CASCADE,
-    unique=True,
-  )
+  language = models.OneToOneField(Language, on_delete=models.CASCADE)
   body = models.TextField(blank=True, default="")
 
 class MailTemplate(models.Model):

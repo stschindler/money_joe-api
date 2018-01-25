@@ -1,6 +1,9 @@
 from django.db import models
 
 class Country(models.Model):
+  class Meta:
+    verbose_name_plural = "Countries"
+
   iso_code = models.CharField(max_length=4, unique=True)
   name = models.CharField(max_length=64)
 

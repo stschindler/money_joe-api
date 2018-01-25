@@ -54,6 +54,7 @@ INSTALLED_APPS = [
   "account",
   "journal",
   "graphql_api",
+  "demodata",
 ]
 
 MIDDLEWARE = [
