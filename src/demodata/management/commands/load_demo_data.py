@@ -1,6 +1,8 @@
 from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
+from household.models import Household, HouseholdMembership
 
+from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import BaseCommand
 
@@ -24,6 +26,35 @@ def find_or_prepare(model, **kwargs):
 
 class Command(BaseCommand):
   def handle(self, *args, **kwargs):
+    # Users.
+    users_data = [
+      {
+        "username": "stsch", "password_raw": "roflcopter",
+        "email": "hi@stschindler.io", "is_staff": True, "is_admin": True,
+        "first_name": "Stefan", "last_name": "Schindler",
+      },
+      {
+        "username": "tisch", "password_raw": "miabambina",
+        "email": "christianeschindler86@gmail.com", "first_name": "Tina",
+        "last_name": "Schindler",
+      },
+    ]
+    users = {}
+
+    for user_data in users_data:
+      user = find_or_prepare(User, username=user_data["username"])
+
+      set_field_values(user, user_data)
+
+      # Only set password if the user is new. Otherwise all active sessions
+      # will be terminated, which is annoying when developing. :-)
+      if user.pk is None:
+        user.set_password(user_data["password_raw"])
+
+      user.save()
+
+      users[user.username] = user
+
     # Countries.
     countries_data = [
       {"iso_code": "de", "name": "Germany"},
@@ -88,3 +119,42 @@ class Command(BaseCommand):
       )
       set_field_values(country_currency, country_currency_data)
       country_currency.save()
+
+    # Households.
+    households_data = [
+      {"name": "Schindler", "default_currency_ref": "EUR"},
+      {"name": "Swiss", "default_currency_ref": "CHF"},
+    ]
+    households = {}
+
+    for household_data in households_data:
+      default_currency = currencies[household_data["default_currency_ref"]]
+
+      household = find_or_prepare(Household, name=household_data["name"])
+
+      set_field_values(household, household_data)
+      household.default_currency = default_currency
+      household.save()
+
+      households[household.name] = household
+
+    # Household memberships.
+    household_memberships_data = [
+      {
+        "household_ref": "Schindler", "user_ref": "stsch",
+        "level": HouseholdMembership.Level.ADMIN,
+      },
+      {
+        "household_ref": "Schindler", "user_ref": "tisch",
+        "level": HouseholdMembership.Level.USER,
+      },
+      {
+        "household_ref": "Swiss", "user_ref": "stsch",
+        "level": HouseholdMembership.Level.ADMIN,
+      },
+    ]
+
+    for household_membership_data in household_memberships_data:
+      household_membership = find_or_prepare(
+          # TODO
+      )
