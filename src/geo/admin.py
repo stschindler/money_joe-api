@@ -12,7 +12,7 @@ class CountryAdmin(admin.ModelAdmin):
 class LanguageAdmin(admin.ModelAdmin):
   list_display = ("locale_name", "name", "country")
   list_filter = ("country",)
-  raw_id_fields = ("country",)
+  raw_id_fields = ()
   search_fields = ("locale_name", "name", "country__name")
   ordering = ("locale_name",)
 

@@ -1,9 +1,10 @@
+from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import BaseCommand
 
-def set_field_values(data, instance):
+def set_field_values(instance, data):
   for key, value in data.items():
     try:
       field = instance._meta.get_field(key)
@@ -12,6 +13,14 @@ def set_field_values(data, instance):
 
     if field is not None:
       setattr(instance, key, value)
+
+def find_or_prepare(model, **kwargs):
+  instance = model.objects.filter(**kwargs).first()
+
+  if instance is None:
+    instance = model(**kwargs)
+
+  return instance
 
 class Command(BaseCommand):
   def handle(self, *args, **kwargs):
@@ -24,14 +33,9 @@ class Command(BaseCommand):
     countries = {}
 
     for country_data in countries_data:
-      country = Country.objects \
-        .filter(iso_code=country_data["iso_code"]) \
-        .first()
+      country = find_or_prepare(Country, iso_code=country_data["iso_code"])
 
-      if country is None:
-        country = Country(iso_code=country_data["iso_code"])
-
-      set_field_values(country_data, country)
+      set_field_values(country, country_data)
       country.save()
 
       countries[country.iso_code] = country
@@ -44,13 +48,43 @@ class Command(BaseCommand):
     ]
 
     for language_data in languages_data:
-      language = Language.objects \
-        .filter(locale_name=language_data["locale_name"]) \
-        .first()
+      language = \
+        find_or_prepare(Language, locale_name=language_data["locale_name"])
 
-      if language is None:
-        language = Language(locale_name=language_data["locale_name"])
-
-      set_field_values(language_data, language)
+      set_field_values(language, language_data)
       language.country = countries[language_data["country_ref"]]
       language.save()
+
+    # Currencies.
+    currencies_data = [
+      {"iso_code": "EUR", "symbol": "€"},
+      {"iso_code": "CHF", "symbol": "Fr."},
+      {"iso_code": "USD", "symbol": "US$"},
+    ]
+    currencies = {}
+
+    for currency_data in currencies_data:
+      currency = find_or_prepare(Currency, iso_code=currency_data["iso_code"])
+
+      set_field_values(currency, currency_data)
+      currency.save()
+
+      currencies[currency.iso_code] = currency
+
+    # Country currencies.
+    country_currencies_data = [
+      {"country_ref": "de", "currency_ref": "EUR"},
+      {"country_ref": "ch", "currency_ref": "CHF"},
+      {"country_ref": "us", "currency_ref": "USD"},
+    ]
+
+    for country_currency_data in country_currencies_data:
+      country = countries[country_currency_data["country_ref"]]
+      currency = currencies[country_currency_data["currency_ref"]]
+
+      country_currency = find_or_prepare(
+        CountryCurrency,
+        country=country, currency=currency
+      )
+      set_field_values(country_currency, country_currency_data)
+      country_currency.save()
