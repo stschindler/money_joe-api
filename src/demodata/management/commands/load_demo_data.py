@@ -1,3 +1,4 @@
+from account.models import Account
 from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
 from household.models import Household, HouseholdMembership
@@ -30,7 +31,7 @@ class Command(BaseCommand):
     users_data = [
       {
         "username": "stsch", "password_raw": "roflcopter",
-        "email": "hi@stschindler.io", "is_staff": True, "is_admin": True,
+        "email": "hi@stschindler.io", "is_staff": True, "is_superuser": True,
         "first_name": "Stefan", "last_name": "Schindler",
       },
       {
@@ -155,6 +156,43 @@ class Command(BaseCommand):
     ]
 
     for household_membership_data in household_memberships_data:
+      household = households[household_membership_data["household_ref"]]
+      user = users[household_membership_data["user_ref"]]
+
       household_membership = find_or_prepare(
-          # TODO
+        HouseholdMembership, household=household, user=user
       )
+
+      set_field_values(household_membership, household_membership_data)
+      household_membership.save()
+
+    # Accounts.
+    accounts_data = [
+      {
+        "household_ref": "Schindler", "reference": "DE123456789X",
+        "name": "Stefan's giro account", "owner_ref": "stsch",
+        "meta": {"bic": "BINGDIDING"},
+      },
+      {
+        "household_ref": "Schindler", "reference": "DE44556677X",
+        "name": "Holiday savings", "owner_ref": "tisch",
+        "meta": {"bic": "WOOMDIBOOM"},
+      },
+      {
+        "household_ref": "Swiss", "reference": "CH23984948352943X",
+        "name": "Secret account", "owner_ref": "stsch",
+        "meta": {"bic": "CHOCOLATE"},
+      },
+    ]
+
+    for account_data in accounts_data:
+      household = households[account_data["household_ref"]]
+      owner = users[account_data["owner_ref"]]
+
+      account = find_or_prepare(
+        Account, household=household, reference=account_data["reference"]
+      )
+
+      set_field_values(account, account_data)
+      account.owner = owner
+      account.save()
