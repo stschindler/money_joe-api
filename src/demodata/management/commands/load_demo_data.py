@@ -2,6 +2,7 @@ from account.models import Account
 from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
 from household.models import Household, HouseholdMembership
+from mail.models import MailSignature
 
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
@@ -78,6 +79,7 @@ class Command(BaseCommand):
       {"locale_name": "de_ch", "name": "German (Swiss)", "country_ref": "ch"},
       {"locale_name": "en_us", "name": "English (US)", "country_ref": "us"},
     ]
+    languages = {}
 
     for language_data in languages_data:
       language = \
@@ -86,6 +88,8 @@ class Command(BaseCommand):
       set_field_values(language, language_data)
       language.country = countries[language_data["country_ref"]]
       language.save()
+
+      languages[language.locale_name] = language
 
     # Currencies.
     currencies_data = [
@@ -196,3 +200,49 @@ class Command(BaseCommand):
       set_field_values(account, account_data)
       account.owner = owner
       account.save()
+
+    # Mail signatures.
+    mail_signatures_data = [
+      {
+        "language_ref": "en_us",
+        "body": """
+You are receiving this e-mail because you are a user of MoneyJoe, the hipster
+housekeeping tool. If you think you've wrongly received it, or generally don't
+want to receive mails from us, just click the following link and we won't
+bother you again with any e-mail:
+{optout_url}
+
+**Want to reach out to us?** Go to {product_website_url}, tweet to
+{contact_twitter_handle} or send an e-mail to {contact_email_address}!
+
+MoneyJoe is a Limbozz product. ({limbozz_website_url})
+
+{impressum}
+        """.strip(),
+      },
+      {
+        "language_ref": "de_de",
+        "body": """
+Du erhälst diese E-Mail, weil du ein User von MoneyJoe bist, dem
+Hipster-Haushaltsbuch-Tool. Wenn du der Meinung bist, dass du die Mail
+fälschlicherweise bekommen hast, oder generell keine Lust auf Mails von uns
+hast, dann klicke den folgenden Link:
+{optout_url}
+
+**Hast du uns was mitzuteilen?** Gehe zu {product_website_url}, tweete an
+{contact_twitter_handle} oder sende eine E-Mail zu {contact_email_address}!
+
+MoneyJoe ist ein Produkt von Limbozz ({limbozz_website_url}).
+
+{impressum}
+        """.strip(),
+      },
+    ]
+
+    for mail_signature_data in mail_signatures_data:
+      language = languages[mail_signature_data["language_ref"]]
+
+      mail_signature = find_or_prepare(MailSignature, language=language)
+
+      set_field_values(mail_signature, mail_signature_data)
+      mail_signature.save()
