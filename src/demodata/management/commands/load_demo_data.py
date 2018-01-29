@@ -3,6 +3,7 @@ from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
 from household.models import Household, HouseholdMembership
 from mail.models import MailSignature, MailFragment, MailTemplate
+from registration.models import AccountActivation
 
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
@@ -37,8 +38,13 @@ class Command(BaseCommand):
       },
       {
         "username": "tisch", "password_raw": "miabambina",
-        "email": "christianeschindler86@gmail.com", "first_name": "Tina",
+        "email": "moneyjoe.tina@stschindler.io", "first_name": "Tina",
         "last_name": "Schindler",
+      },
+      {
+        "username": "johndoe", "password_raw": "jonnydonny",
+        "email": "moneyjoe.johndoe@stschindler.io", "first_name": "John",
+        "last_name": "Doe",
       },
     ]
     users = {}
@@ -417,3 +423,32 @@ class Command(BaseCommand):
 
       set_field_values(mail_template, mail_template_data)
       mail_template.save()
+
+    # Account activations.
+    account_activations_data = [
+      {
+        "user_ref": "stsch", "code": "ABC123XYZ",
+        "creation_time": "2018-01-28T20:50:05+01:00",
+        "activation_time": "2018-01-28T20:51:31+01:00", "ip": "127.0.0.1",
+      },
+      {
+        "user_ref": "tisch", "code": "jgsdf8gzms897dfoigj",
+        "creation_time": "2018-01-29T20:50:05+01:00",
+        "activation_time": "2018-01-29T20:51:31+01:00", "ip": "192.168.1.10",
+      },
+      {
+        "user_ref": "johndoe", "code": "sdfoigj9825ohgnwjeiolrkjfgowlk",
+        "creation_time": "2018-01-29T12:13:14+01:00",
+        "activation_time": None, "ip": "192.168.178.1",
+      },
+    ]
+
+    for account_activation_data in account_activations_data:
+      user = users[account_activation_data["user_ref"]]
+
+      account_activation = find_or_prepare(
+        AccountActivation, user=user, code=account_activation_data["code"],
+      )
+
+      set_field_values(account_activation, account_activation_data)
+      account_activation.save()

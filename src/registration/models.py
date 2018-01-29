@@ -3,8 +3,9 @@ from django.db import models
 from django.utils import timezone
 
 class AccountActivation(models.Model):
-  user = models.ForeignKey(
+  user = models.OneToOneField(
     User, related_name="account_activations", on_delete=models.CASCADE,
+    unique=True,
   )
   code = models.CharField(max_length=128, unique=True)
   creation_time = models.DateTimeField()
@@ -18,4 +19,4 @@ class AccountActivation(models.Model):
     return super().save(*args, **kwargs)
 
   def __str__(self):
-    return self.code
+    return str(self.user)
