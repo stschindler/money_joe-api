@@ -1,4 +1,5 @@
 from . import settings as self_settings
+from geo.models import Language
 from joetils.helpers import get_client_ip
 from mail.helpers import send_template_mail
 from registration.helpers import is_registration_count_exceeded
@@ -45,6 +46,7 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
   class Input:
     email = graphene.String(required=True)
     password = graphene.String(required=True)
+    locale_name = graphene.String()
 
   errors = graphene.List(graphene.String)
 
@@ -73,6 +75,17 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
       elif is_registration_count_exceeded(client_ip) is True:
         errors.append("Too many registration attempts from your IP.")
 
+    # Use requested locale name.
+    locale_name = None
+
+    if "locale_name" in kwargs:
+      language = Language.objects \
+        .filter(locale_name=kwargs["locale_name"]) \
+        .first()
+
+      if language is None:
+        errors.append("Invalid locale name: {}".format(kwargs["locale_name"]))
+
     if len(errors) < 1:
       code = str(uuid.uuid4())
 
@@ -90,8 +103,6 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
           "activation_url": "https://moneyjoe.io/",
         }
 
-        send_template_mail(
-          user.email, "registration_activation",
-        )
+        send_template_mail(user.email, "registration_activation", locale_name)
 
     return RegisterAccountMutation(errors=errors)

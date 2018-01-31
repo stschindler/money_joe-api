@@ -2,6 +2,7 @@ from . import models
 from . import settings as self_settings
 
 from django.core.mail import send_mail
+import html2text
 
 def _apply_fragments(body, fragments):
   for fragment in fragments:
@@ -10,9 +11,7 @@ def _apply_fragments(body, fragments):
 
   return body
 
-def send_template_mail(
-  recipient_email, template_name, locale_name=None, parameters=None
-):
+def send_template_mail(recipient_email, template_name, locale_name=None):
   """Build content from an e-mail template and send to recipient.
 
   `locale_name` can be `None` to use the fallback locale.
