@@ -14,7 +14,7 @@ class JournalEntry(models.Model):
   description = models.TextField(blank=True, default="")
   creation_time = models.DateTimeField()
   booking_time = models.DateTimeField()
-  valuta_time = models.DateTimeField()
+  valuta_time = models.DateTimeField(blank=True, null=True, default=None)
   creator = models.ForeignKey(
     User, related_name="created_journal_entries", on_delete=models.CASCADE
   )

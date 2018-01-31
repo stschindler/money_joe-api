@@ -6,12 +6,11 @@ from django.db import models
 
 class Account(models.Model):
   class Meta:
-    unique_together = (("household", "reference"),)
+    unique_together = (("household", "name"),)
 
   household = models.ForeignKey(
     Household, related_name="accounts", on_delete=models.CASCADE
   )
-  reference = models.CharField(max_length=128)
   name = models.CharField(max_length=128, blank=True, default="")
   owner = models.ForeignKey(
     User, related_name="owned_accounts", on_delete=models.CASCADE
@@ -19,4 +18,4 @@ class Account(models.Model):
   meta = JSONField(default=dict, blank=True)
 
   def __str__(self):
-    return self.reference
+    return self.name

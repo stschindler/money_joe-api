@@ -2,8 +2,10 @@ from account.models import Account
 from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
 from household.models import Household, HouseholdMembership
+from journal.models import JournalEntry, JournalEntryTag
 from mail.models import MailSignature, MailFragment, MailTemplate
 from registration.models import AccountActivation
+from tag.models import Tag
 
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
@@ -179,33 +181,40 @@ class Command(BaseCommand):
     # Accounts.
     accounts_data = [
       {
-        "household_ref": "Schindler", "reference": "DE123456789X",
-        "name": "Stefan's giro account", "owner_ref": "stsch",
-        "meta": {"bic": "BINGDIDING"},
+        "household_ref": "Schindler", "name": "Stefan's giro",
+        "owner_ref": "stsch",
+        "meta": {"iban": "DE123456789X", "bic": "BINGDIDING"},
       },
       {
-        "household_ref": "Schindler", "reference": "DE44556677X",
-        "name": "Holiday savings", "owner_ref": "tisch",
-        "meta": {"bic": "WOOMDIBOOM"},
+        "household_ref": "Schindler", "name": "Holiday savings",
+        "owner_ref": "stsch",
+        "meta": {"iban": "DE44556677X", "bic": "WOOMDIBOOM"},
       },
       {
-        "household_ref": "Swiss", "reference": "CH23984948352943X",
-        "name": "Secret account", "owner_ref": "stsch",
-        "meta": {"bic": "CHOCOLATE"},
+        "household_ref": "Schindler", "name": "Tina's wallet",
+        "owner_ref": "tisch", "meta": {},
+      },
+      {
+        "household_ref": "Swiss", "name": "Secret account",
+        "owner_ref": "stsch",
+        "meta": {"iban": "CH23984948352943X", "bic": "CHOCOLATE"},
       },
     ]
+    accounts = {}
 
     for account_data in accounts_data:
       household = households[account_data["household_ref"]]
       owner = users[account_data["owner_ref"]]
 
       account = find_or_prepare(
-        Account, household=household, reference=account_data["reference"]
+        Account, household=household, name=account_data["name"]
       )
 
       set_field_values(account, account_data)
       account.owner = owner
       account.save()
+
+      accounts[(household.name, account.name)] = account
 
     # Mail signatures.
     mail_signatures_data = [
@@ -452,3 +461,127 @@ class Command(BaseCommand):
 
       set_field_values(account_activation, account_activation_data)
       account_activation.save()
+
+    tags_data = [
+      {"name": "Lebensmittel", "household_ref": "Schindler"},
+      {"name": "Sprit", "household_ref": "Schindler"},
+      {"name": "Schöggu", "household_ref": "Swiss"},
+      {"name": "Herrgöttli", "household_ref": "Swiss"},
+    ]
+
+    for tag_data in tags_data:
+      household = households[tag_data["household_ref"]]
+
+      tag = find_or_prepare(Tag, name=tag_data["name"], household=household)
+
+      set_field_values(tag, tag_data)
+      tag.save()
+
+    # Journal entries.
+    journal_entries_data = [
+      {
+        "description": "Groceries (cash)",
+        "creation_time": "2018-01-03T14:03:33+01:00",
+        "booking_time": "2018-01-03T14:01:05+01:00",
+        "valuta_time": "2018-01-03T14:01:05+01:00",
+        "creator_ref": "tisch",
+        "household_ref": "Schindler",
+        "debit_account_ref": "Tina's wallet",
+        "credit_account_ref": None,
+        "value": 5839,
+        "currency_ref": "EUR",
+      },
+      {
+        "description": "Gas (bank wire)",
+        "creation_time": "2018-01-04T14:03:33+01:00",
+        "booking_time": "2018-01-04T14:01:05+01:00",
+        "valuta_time": None,
+        "creator_ref": "tisch",
+        "household_ref": "Schindler",
+        "debit_account_ref": "Stefan's giro",
+        "credit_account_ref": None,
+        "value": 3499,
+        "currency_ref": "EUR",
+      },
+      {
+        "description": "Donation",
+        "creation_time": "2018-01-05T14:03:33+01:00",
+        "booking_time": "2018-01-05T14:01:05+01:00",
+        "valuta_time": "2018-01-05T14:01:05+01:00",
+        "creator_ref": "stsch",
+        "household_ref": "Schindler",
+        "debit_account_ref": None,
+        "credit_account_ref": "Stefan's giro",
+        "value": 550,
+        "currency_ref": "EUR",
+      },
+      {
+        "description": "Transfer",
+        "creation_time": "2018-01-06T14:03:33+01:00",
+        "booking_time": "2018-01-06T14:01:05+01:00",
+        "valuta_time": "2018-01-08T15:22:05+01:00",
+        "creator_ref": "stsch",
+        "household_ref": "Schindler",
+        "debit_account_ref": "Stefan's giro",
+        "credit_account_ref": "Holiday savings",
+        "value": 1000,
+        "currency_ref": "EUR",
+      },
+
+      {
+        "description": "Whatever",
+        "creation_time": "2018-02-06T14:03:33+01:00",
+        "booking_time": "2018-02-06T14:01:05+01:00",
+        "valuta_time": "2018-02-08T15:22:05+01:00",
+        "creator_ref": "stsch",
+        "household_ref": "Swiss",
+        "debit_account_ref": None,
+        "credit_account_ref": "Secret account",
+        "value": 99999,
+        "currency_ref": "CHF",
+      },
+    ]
+    journal_entries = {}
+
+    for journal_entry_data in journal_entries_data:
+      creator = users[journal_entry_data["creator_ref"]]
+      household = households[journal_entry_data["household_ref"]]
+      currency = currencies[journal_entry_data["currency_ref"]]
+
+      debit_account = (
+        accounts[(
+          journal_entry_data["household_ref"],
+          journal_entry_data["debit_account_ref"],
+        )]
+        if journal_entry_data["debit_account_ref"] is not None
+        else None
+      )
+      credit_account = (
+        accounts[(
+          journal_entry_data["household_ref"],
+          journal_entry_data["credit_account_ref"],
+        )]
+        if journal_entry_data["credit_account_ref"] is not None
+        else None
+      )
+
+      journal_entry = find_or_prepare(
+        JournalEntry, household=household,
+        description=journal_entry_data["description"]
+      )
+
+      set_field_values(journal_entry, journal_entry_data)
+      journal_entry.debit_account = debit_account
+      journal_entry.credit_account = credit_account
+      journal_entry.currency = currency
+      journal_entry.creator = creator
+      journal_entry.save()
+
+      journal_entries[(journal_entry.description, household.name)] = \
+        journal_entry
+
+    journal_entry_tags_data = [
+      {
+        "entry_ref": ("Groceries (cash)", "Schindler"),
+      },
+    ]
