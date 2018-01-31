@@ -32,6 +32,7 @@ EMAIL_HOST_PASSWORD = env("MJOE_EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("MJOE_EMAIL_USE_TLS", default=True)
 EMAIL_SUBJECT_PREFIX = \
   env("MJOE_EMAIL_SUBJECT_PREFIX", default="[MoneyJoe] ")
+EMAIL_FROM_ADDRESS = env("MJOE_EMAIL_FROM_ADDRESS", default="hi@moneyjoe.io")
 
 INSTALLED_APPS = [
   "django.contrib.admin",

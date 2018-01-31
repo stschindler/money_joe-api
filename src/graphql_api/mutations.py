@@ -1,5 +1,6 @@
 from . import settings as self_settings
 from joetils.helpers import get_client_ip
+from mail.helpers import send_template_mail
 from registration.helpers import is_registration_count_exceeded
 from registration.models import AccountActivation
 
@@ -83,6 +84,14 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
 
         AccountActivation.objects.create(
           user=user, code=code, creation_time=timezone.now(), ip=client_ip
+        )
+
+        email_parameters = {
+          "activation_url": "https://moneyjoe.io/",
+        }
+
+        send_template_mail(
+          user.email, "registration_activation",
         )
 
     return RegisterAccountMutation(errors=errors)
