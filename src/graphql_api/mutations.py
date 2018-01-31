@@ -1,5 +1,6 @@
 from . import settings as self_settings
 from joetils.helpers import get_client_ip
+from registration.helpers import is_registration_count_exceeded
 from registration.models import AccountActivation
 
 from django.contrib.auth.models import User
@@ -44,43 +45,44 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
     email = graphene.String(required=True)
     password = graphene.String(required=True)
 
-  registered = graphene.Boolean()
+  errors = graphene.List(graphene.String)
 
   @classmethod
   def mutate_and_get_payload(cls, root, info, *args, **kwargs):
-    # Validate e-mail. Throws when not valid.
-    validate_email(kwargs["email"])
+    errors = []
 
-    # Make sure user with same e-mail doesn't already exist.
-    existing_user = User.objects.filter(email__iexact=kwargs["email"]).first()
-    if existing_user is not None:
-      raise GraphQLError("E-mail address already in use.")
+    try:
+      validate_email(kwargs["email"])
+      email_valid = True
+    except ValidationError:
+      errors.append("E-mail address invalid.")
+      email_valid = False
 
-    # Stall registration flood attempts. This is NSA grade, so you better not
-    # play with this!
-    cooldown_start = (
-      timezone.now() -
-      timedelta(minutes=self_settings.REGISTRATION_COOLDOWN_MINUTES)
-    )
-    client_ip = get_client_ip(info.context)
+    if len(kwargs["password"]) < 6:
+      errors.append("Password too short, minimum is 6 chars.")
 
-    ip_activation_count = AccountActivation.objects \
-      .filter(creation_time__gte=cooldown_start, ip=client_ip) \
-      .count()
+    if email_valid is True:
+      existing_user = \
+        User.objects.filter(email__iexact=kwargs["email"]).first()
+      client_ip = get_client_ip(info.context)
 
-    if ip_activation_count >= self_settings.MAX_REGISTRATION_COUNT:
-      raise SuspiciousOperation("Too many registration attempts from your IP.")
+      if existing_user is not None:
+        errors.append("E-mail address already in use.")
 
-    code = str(uuid.uuid4())
+      elif is_registration_count_exceeded(client_ip) is True:
+        errors.append("Too many registration attempts from your IP.")
 
-    with transaction.atomic():
-      user = User.objects.create_user(
-        username=kwargs["email"], email=kwargs["email"],
-        password=kwargs["password"], is_active=False,
-      )
+    if len(errors) < 1:
+      code = str(uuid.uuid4())
 
-      AccountActivation.objects.create(
-        user=user, code=code, creation_time=timezone.now(), ip=client_ip
-      )
+      with transaction.atomic():
+        user = User.objects.create_user(
+          username=kwargs["email"], email=kwargs["email"],
+          password=kwargs["password"], is_active=False,
+        )
 
-    return RegisterAccountMutation(registered=True)
+        AccountActivation.objects.create(
+          user=user, code=code, creation_time=timezone.now(), ip=client_ip
+        )
+
+    return RegisterAccountMutation(errors=errors)
