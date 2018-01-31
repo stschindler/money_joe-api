@@ -7,10 +7,37 @@ from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
+from graphql import GraphQLError
 import graphene
 
 from datetime import timedelta
 import uuid
+
+class LoginMutation(graphene.relay.ClientIDMutation):
+  class Input:
+    username = graphene.String(required=True)
+    password = graphene.String(required=True)
+
+  token = graphene.String()
+  errors = graphene.List(graphene.String)
+
+  @classmethod
+  def mutate_and_get_payload(cls, root, info, *args, **kwargs):
+    errors = []
+    token = None
+
+    user = User.objects.filter(username__iexact=kwargs["username"]).first()
+
+    if user is None or user.check_password(kwargs["password"]) is not True:
+      errors.append("Username/password wrong.")
+
+    elif user.is_active is not True:
+      errors.append("User account not active/suspended.")
+
+    else:
+      token = str(uuid.uuid4())
+
+    return LoginMutation(token=token, errors=errors)
 
 class RegisterAccountMutation(graphene.relay.ClientIDMutation):
   class Input:
@@ -27,7 +54,7 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
     # Make sure user with same e-mail doesn't already exist.
     existing_user = User.objects.filter(email__iexact=kwargs["email"]).first()
     if existing_user is not None:
-      raise ValidationError("E-mail address already in use.")
+      raise GraphQLError("E-mail address already in use.")
 
     # Stall registration flood attempts. This is NSA grade, so you better not
     # play with this!

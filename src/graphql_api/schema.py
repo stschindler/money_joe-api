@@ -6,6 +6,7 @@ import graphene
 
 class Mutation(graphene.ObjectType):
   register_account = mutations.RegisterAccountMutation.Field()
+  login = mutations.LoginMutation.Field()
 
 class Query(graphene.ObjectType):
   node = graphene.relay.Node.Field()
