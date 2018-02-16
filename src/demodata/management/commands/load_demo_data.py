@@ -6,6 +6,7 @@ from journal.models import JournalEntry, JournalEntryTag
 from mail.models import MailSignature, MailFragment, MailTemplate
 from registration.models import AccountActivation
 from tag.models import Tag
+from user_profile.models import UserProfile
 
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
@@ -222,7 +223,7 @@ class Command(BaseCommand):
         "language_ref": None,
         "body": """
 <p>
-  You are receiving this e-mail because you are a user of MoneyJoe, the hipster
+  You are receiving this e-mail because you are a user of MoneyJoe, the awesome
   housekeeping tool. If you think you've wrongly received it, or generally
   don't want to receive mails from us, just click the following link and we
   won't bother you again with any e-mail:
@@ -249,16 +250,16 @@ class Command(BaseCommand):
         "language_ref": "de_de",
         "body": """
 <p>
-  Du erhälst diese E-Mail, weil du ein User von MoneyJoe bist, dem
-  Hipster-Haushaltsbuch-Tool. Wenn du der Meinung bist, dass du die Mail
-  fälschlicherweise bekommen hast, oder generell keine Lust auf Mails von uns
-  hast, dann klicke den folgenden Link:
+  Du erhälst diese E-Mail, weil du ein User von MoneyJoe bist, dem praktischen
+  Haushaltsbuch. Wenn du meinst, dass du die Mail fälschlicherweise bekommen
+  hast, oder generell keine Lust auf Mails von uns hast, dann klicke den
+  folgenden Link:
 </p>
 
 <p><a href="{optout_url}">{optout_url}</a></p>
 
 <p>
-  <strong>Hast du uns was mitzuteilen?</strong> Gehe zu
+  <strong>Hast du uns etwas mitzuteilen?</strong> Gehe zu
   <a href="{product_website_url}">{product_website_url}</a>, tweete an
   <a href="{contact_twitter_handle}">{contact_twitter_handle}</a>
   oder sende eine E-Mail zu
@@ -314,27 +315,28 @@ class Command(BaseCommand):
         "reference": "impressum",
         "language_ref": None,
         "body": """
+<hr>
 <p>Impressum (Legal Notice)</p>
 
 <address>
   <strong>Limbozz GmbH</strong><br>
-  Pfarrer-Becking-Straße 21<br>
+  Blücherstraße 18<br>
   46397 Bocholt<br>
   Deutschland
 </address>
 
-<ul>
-  <li>Phone: +49 (2871) 2424436</li>
-  <li>Fax: +49 (2871) 2424437</li>
-  <li>E-Mail: hi@limbozz.com</li>
-</ul>
+<p>
+  Phone: +49 (2871) 2424436<br>
+  Fax: +49 (2871) 2424437<br>
+  E-Mail: hi@limbozz.com
+</p>
 
-<ul>
-  <li>Management: Stefan Schindler</li>
-  <li>Commercial Register: Amtsgericht Coesfeld, HRB 15916</li>
-  <li>VAT ID (USt-IdNr.): DE304363536</li>
-  <li>Responsible according to § 55 Abs. 2 RStV: Stefan Schindler</li>
-</ul>
+<p>
+  Management: Stefan Schindler<br>
+  Commercial register: Coesfeld, HRB 15916<br>
+  VAT ID: DE304363536<br>
+  Responsible according to § 55 Abs. 2 RStV: Stefan Schindler
+</p>
         """.strip(),
       },
 
@@ -342,27 +344,28 @@ class Command(BaseCommand):
         "reference": "impressum",
         "language_ref": "de_de",
         "body": """
+<hr>
 <p>Impressum</p>
 
 <address>
   <strong>Limbozz GmbH</strong><br>
-  Pfarrer-Becking-Straße 21<br>
+  Blücherstraße 18<br>
   46397 Bocholt<br>
   Deutschland
 </address>
 
-<ul>
-  <li>Telefon: +49 (2871) 2424436</li>
-  <li>Fax: +49 (2871) 2424437</li>
-  <li>E-Mail: hi@limbozz.com</li>
-</ul>
+<p>
+  Telefon: +49 (2871) 2424436<br>
+  Fax: +49 (2871) 2424437<br>
+  E-Mail: hi@limbozz.com
+</p>
 
-<ul>
-  <li>Geschäftsführung: Stefan Schindler</li>
-  <li>Handelsregister: Amtsgericht Coesfeld, HRB 15916</li>
-  <li>USt-IdNr.: DE304363536</li>
-  <li>Verantwortlicher gemäß § 55 Abs. 2 RStV: Stefan Schindler</li>
-</ul>
+<p>
+  Geschäftsführung: Stefan Schindler<br>
+  Handelsregister: Coesfeld, HRB 15916<br>
+  USt-IdNr.: DE304363536<br>
+  Verantwortlicher gemäß § 55 Abs. 2 RStV: Stefan Schindler
+</p>
         """.strip(),
       },
     ]
@@ -585,3 +588,20 @@ class Command(BaseCommand):
         "entry_ref": ("Groceries (cash)", "Schindler"),
       },
     ]
+
+    # User profiles.
+    user_profiles_data = [
+      {"user_ref": "stsch", "language_ref": "de_de"},
+      {"user_ref": "tisch", "language_ref": "de_de"},
+      {"user_ref": "johndoe", "language_ref": "en_us"},
+    ]
+
+    for user_profile_data in user_profiles_data:
+      user = users[user_profile_data["user_ref"]]
+      language = languages[user_profile_data["language_ref"]]
+
+      user_profile = find_or_prepare(UserProfile, user=user)
+
+      set_field_values(user_profile, user_profile_data)
+      user_profile.language = language
+      user_profile.save()

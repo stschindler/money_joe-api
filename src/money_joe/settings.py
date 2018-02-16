@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
   "joetils",
   "geo",
+  "user_profile",
   "mail",
   "registration",
   "currency",
