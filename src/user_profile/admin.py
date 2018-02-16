@@ -3,7 +3,7 @@ from . import models
 from django.contrib import admin
 
 class UserProfileAdmin(admin.ModelAdmin):
-  list_display = ("user", "language")
+  list_display = ("user", "language", "email_opted_out")
   list_filter = ("language",)
   raw_id_fields = ("user",)
   search_fields = ("user__username",)

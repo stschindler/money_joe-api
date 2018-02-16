@@ -3,7 +3,8 @@ import environ
 import os
 
 env = environ.Env()
-env.read_env(".env")
+env_path = env("MJOE_ENV_PATH", default=".env")
+env.read_env(env_path)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,6 +17,9 @@ MEDIA_URL = env("MJOE_MEDIA_URL", default="/media/")
 MEDIA_ROOT = env("MJOE_MEDIA_ROOT", default="public/media")
 
 DATABASES = {"default": env.db("MJOE_DATABASE")}
+
+JWT_PRIVATE_KEY = env("MJOE_JWT_PRIVATE_KEY")
+JWT_PUBLIC_KEY_PATH = env("MJOE_JWT_PUBLIC_KEY")
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"

@@ -597,9 +597,12 @@ class Command(BaseCommand):
 
     # User profiles.
     user_profiles_data = [
-      {"user_ref": "stsch", "language_ref": "de_de"},
-      {"user_ref": "tisch", "language_ref": "de_de"},
-      {"user_ref": "johndoe", "language_ref": "en_us"},
+      {"user_ref": "stsch", "language_ref": "de_de", "email_opted_out": False},
+      {"user_ref": "tisch", "language_ref": "de_de", "email_opted_out": False},
+      {
+        "user_ref": "johndoe", "language_ref": "en_us",
+        "email_opted_out": True,
+      },
     ]
 
     for user_profile_data in user_profiles_data:

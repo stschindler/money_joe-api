@@ -10,3 +10,4 @@ class UserProfile(models.Model):
   language = models.ForeignKey(
     Language, related_name="user_profiles", on_delete=models.CASCADE
   )
+  email_opted_out = models.BooleanField(default=False)
