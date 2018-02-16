@@ -4,6 +4,7 @@ from joetils.helpers import get_client_ip
 from mail.helpers import send_template_mail
 from registration.helpers import is_registration_count_exceeded
 from registration.models import AccountActivation
+from user_profile.models import UserProfile
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, SuspiciousOperation
@@ -86,6 +87,8 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
       if language is None:
         errors.append("Invalid locale name: {}".format(kwargs["locale_name"]))
 
+      locale_name = kwargs["locale_name"]
+
     if len(errors) < 1:
       code = str(uuid.uuid4())
 
@@ -98,6 +101,8 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
         AccountActivation.objects.create(
           user=user, code=code, creation_time=timezone.now(), ip=client_ip
         )
+
+        user_profile = UserProfile.objects.create(user=user, language=language)
 
         email_parameters = {
           "activation_url": "https://moneyjoe.io/",

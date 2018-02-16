@@ -222,56 +222,64 @@ class Command(BaseCommand):
       {
         "language_ref": None,
         "body": """
-<p>
-  You are receiving this e-mail because you are a user of MoneyJoe, the awesome
-  housekeeping tool. If you think you've wrongly received it, or generally
-  don't want to receive mails from us, just click the following link and we
-  won't bother you again with any e-mail:
-</p>
+<hr>
 
-<p><a href="{optout_url}">{optout_url}</a></p>
+<div style="color: #666; font-size: x-small;">
+  <p>
+    You are receiving this e-mail because you are a user of MoneyJoe, the awesome
+    housekeeping tool. If you think you've wrongly received it, or generally
+    don't want to receive mails from us, just click the following link and we
+    won't bother you again with any e-mail:
+  </p>
 
-<p>
-  <strong>Want to reach out to us?</strong> Go to
-  <a href="{product_website_url}">{product_website_url</a>, tweet
-  to <a href="{contact_twitter_handle}">{contact_twitter_handle}</a> or send an
-  e-mail to <a href="{contact_email_address}">{contact_email_address}</a>!
-</p>
+  <p><a href="{optout_url}">{optout_url}</a></p>
 
-<p>
-  MoneyJoe is a Limbozz product.
-  (<a href="{limbozz_website_url}">{limbozz_website_url}</a>)
-</p>
+  <p>
+    <strong>Want to reach out to us?</strong> Go to
+    <a href="{product_website_url}">{product_website_url</a>, tweet
+    to <a href="{contact_twitter_handle}">{contact_twitter_handle}</a> or send an
+    e-mail to <a href="{contact_email_address}">{contact_email_address}</a>!
+  </p>
 
-{impressum}
+  <p>
+    MoneyJoe is a Limbozz product.
+    (<a href="{limbozz_website_url}">{limbozz_website_url}</a>)
+  </p>
+
+  {impressum}
+</div>
         """.strip(),
       },
       {
         "language_ref": "de_de",
         "body": """
-<p>
-  Du erhälst diese E-Mail, weil du ein User von MoneyJoe bist, dem praktischen
-  Haushaltsbuch. Wenn du meinst, dass du die Mail fälschlicherweise bekommen
-  hast, oder generell keine Lust auf Mails von uns hast, dann klicke den
-  folgenden Link:
-</p>
+<hr>
 
-<p><a href="{optout_url}">{optout_url}</a></p>
+<div style="color: #666; font-size: x-small;">
+  <p>
+    Du erhälst diese E-Mail, weil du ein User von MoneyJoe bist, dem praktischen
+    Haushaltsbuch. Wenn du meinst, dass du die Mail fälschlicherweise bekommen
+    hast, oder generell keine Lust auf Mails von uns hast, dann klicke den
+    folgenden Link:
+  </p>
 
-<p>
-  <strong>Hast du uns etwas mitzuteilen?</strong> Gehe zu
-  <a href="{product_website_url}">{product_website_url}</a>, tweete an
-  <a href="{contact_twitter_handle}">{contact_twitter_handle}</a>
-  oder sende eine E-Mail zu
-  <a href="{contact_email_address}">{contact_email_address}</a>!
-</p>
+  <p><a href="{optout_url}">{optout_url}</a></p>
 
-<p>
-  MoneyJoe ist ein Produkt von Limbozz
-  (<a href="{limbozz_website_url}">{limbozz_website_url}</a>).
-</p>
+  <p>
+    <strong>Hast du uns etwas mitzuteilen?</strong> Gehe zu
+    <a href="{product_website_url}">{product_website_url}</a>, tweete an
+    <a href="{contact_twitter_handle}">{contact_twitter_handle}</a>
+    oder sende eine E-Mail zu
+    <a href="{contact_email_address}">{contact_email_address}</a>!
+  </p>
 
-{impressum}
+  <p>
+    MoneyJoe ist ein Produkt von Limbozz
+    (<a href="{limbozz_website_url}">{limbozz_website_url}</a>).
+  </p>
+
+  {impressum}
+</div>
         """.strip(),
       },
     ]
@@ -315,7 +323,6 @@ class Command(BaseCommand):
         "reference": "impressum",
         "language_ref": None,
         "body": """
-<hr>
 <p>Impressum (Legal Notice)</p>
 
 <address>
@@ -344,7 +351,6 @@ class Command(BaseCommand):
         "reference": "impressum",
         "language_ref": "de_de",
         "body": """
-<hr>
 <p>Impressum</p>
 
 <address>
