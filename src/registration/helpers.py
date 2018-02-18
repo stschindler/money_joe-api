@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from datetime import timedelta
 
-
 def is_registration_count_exceeded(
   ip_address, max_count=self_settings.MAX_REGISTRATION_COUNT,
   cooldown_minutes=self_settings.REGISTRATION_COOLDOWN_MINUTES

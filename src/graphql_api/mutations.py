@@ -1,19 +1,23 @@
 from . import settings as self_settings
 from geo.models import Language
 from joetils.helpers import get_client_ip
-from mail.helpers import send_template_mail
+from mail.helpers import parse_opt_out_token
+from mail.helpers import send_user_mail, create_opt_out_token
 from registration.helpers import is_registration_count_exceeded
 from registration.models import AccountActivation
+from user_profile.models import UserProfile
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.core.validators import validate_email
 from django.db import transaction
+from django.urls import reverse
 from django.utils import timezone
 from graphql import GraphQLError
 import graphene
 
 from datetime import timedelta
+import urllib
 import uuid
 
 class LoginMutation(graphene.relay.ClientIDMutation):
@@ -86,6 +90,8 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
       if language is None:
         errors.append("Invalid locale name: {}".format(kwargs["locale_name"]))
 
+      locale_name = kwargs["locale_name"]
+
     if len(errors) < 1:
       code = str(uuid.uuid4())
 
@@ -99,10 +105,19 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
           user=user, code=code, creation_time=timezone.now(), ip=client_ip
         )
 
-        email_parameters = {
-          "activation_url": "https://moneyjoe.io/",
-        }
+        user_profile = UserProfile.objects.create(user=user, language=language)
 
-        send_template_mail(user.email, "registration_activation", locale_name)
+        # Create the opt out URL.
+        opt_out_token = create_opt_out_token(user.id)
+        opt_out_url = info.context.build_absolute_uri(
+          reverse("mail_opt_out") +
+          "?" + urllib.parse.urlencode({"token": opt_out_token})
+        )
+
+        fragments = {
+          "activation_url": "???",
+          "optout_url": opt_out_url,
+        }
+        send_user_mail(user, "registration_activation", locale_name, fragments)
 
     return RegisterAccountMutation(errors=errors)

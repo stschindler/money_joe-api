@@ -1,17 +1,55 @@
 from . import models
 from . import settings as self_settings
 
+from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import OuterRef, Exists, Q
 import html2text
+import jwt
 
-def _apply_fragments(body, fragments):
+JWT_PRIVATE_KEY = getattr(settings, "JWT_PRIVATE_KEY")
+JWT_PUBLIC_KEY = getattr(settings, "JWT_PUBLIC_KEY")
+
+class OptOutTokenError(Exception): pass
+
+def create_opt_out_token(user_id):
+  """Create JWT for opting out from receivng e-mails.
+  """
+  token = jwt.encode({"user_id": user_id}, JWT_PRIVATE_KEY, algorithm="RS256")
+  return token
+
+def parse_opt_out_token(token):
+  try:
+    data = jwt.decode(token, JWT_PUBLIC_KEY, algorithm="RS256")
+  except Exception as error:
+    raise OptOutTokenError(str(error))
+
+  return data
+
+def _apply_fragments(body, fragments, custom_fragments=None):
+  format_key = lambda key: "{" + key + "}"
+
   for fragment in fragments:
-    key = "{" + fragment.reference + "}"
-    body = body.replace(key, fragment.body)
+    body = body.replace(format_key(fragment.reference), fragment.body)
+
+  if custom_fragments is not None:
+    for key, value in custom_fragments.items():
+      body = body.replace(format_key(key), value)
 
   return body
 
-def send_template_mail(recipient_email, template_name, locale_name=None):
+def send_user_mail(user, *args, **kwargs):
+  """Send an e-mail to a user if they didn't opt out.
+
+  Forwards all arguments to `send_template_mail`, except for `recipient_email`,
+  which is taken from the user.
+  """
+  if user.profile.email_opted_out is False:
+    send_template_mail(user.email, *args, **kwargs)
+
+def send_template_mail(
+  recipient_email, template_name, locale_name=None, custom_fragments=None
+):
   """Build content from an e-mail template and send to recipient.
 
   `locale_name` can be `None` to use the fallback locale.
@@ -51,21 +89,36 @@ def send_template_mail(recipient_email, template_name, locale_name=None):
   else:
     signature = None
 
-  # Build signature body. Use fragments that match the signature's language.
+  # Build signature body. Use fragments that match the signature's language or
+  # act as fallbacks.
   if signature is None:
     signature_body = ""
 
   else:
+    language_fragments = models.MailFragment.objects \
+      .order_by() \
+      .filter(
+        reference=OuterRef("reference"),
+        language=signature.language,
+      )
+
     signature_fragments = models.MailFragment.objects \
-      .filter(language=signature.language)
+      .annotate(language_fragment_exists=Exists(language_fragments)) \
+      .filter(
+        Q(language=signature.language) |
+        Q(language=None, language_fragment_exists=False)
+      )
 
-    signature_body = _apply_fragments(signature.body, signature_fragments)
+    signature_body = \
+      _apply_fragments(signature.body, signature_fragments, custom_fragments)
 
-  # Build mail body. Use fragments that match the template's language.
+  # Build mail body. Use custom fragments and fragments that match the
+  # template's language.
   template_fragments = models.MailFragment.objects \
     .filter(language=template.language)
 
-  mail_body = _apply_fragments(template.body, template_fragments)
+  mail_body = \
+    _apply_fragments(template.body, template_fragments, custom_fragments)
   mail_body += signature_body
 
   plain_body = html2text.html2text(mail_body)

@@ -1,9 +1,11 @@
 import environ
 
+import base64
 import os
 
 env = environ.Env()
-env.read_env(".env")
+env_path = env("MJOE_ENV_PATH", default=".env")
+env.read_env(env_path)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,6 +18,9 @@ MEDIA_URL = env("MJOE_MEDIA_URL", default="/media/")
 MEDIA_ROOT = env("MJOE_MEDIA_ROOT", default="public/media")
 
 DATABASES = {"default": env.db("MJOE_DATABASE")}
+
+JWT_PRIVATE_KEY = base64.b64decode(env("MJOE_JWT_PRIVATE_KEY"))
+JWT_PUBLIC_KEY = base64.b64decode(env("MJOE_JWT_PUBLIC_KEY"))
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
@@ -46,7 +51,9 @@ INSTALLED_APPS = [
   "graphene_django",
 
   "joetils",
+  "layout",
   "geo",
+  "user_profile",
   "mail",
   "registration",
   "currency",

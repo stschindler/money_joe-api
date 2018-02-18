@@ -3,8 +3,8 @@ FROM alpine:3.7 AS builder
 RUN \
   apk update && \
   apk add \
-    python3=3.6.3-r9 postgresql-dev=10.1-r1 gcc=6.4.0-r5 \
-    python3-dev=3.6.3-r9 libc-dev=0.7.1-r0
+    python3=3.6.3-r9 postgresql-dev=10.2-r0 gcc=6.4.0-r5 \
+    python3-dev=3.6.3-r9 libc-dev=0.7.1-r0 libffi-dev=3.2.1-r4
 
 RUN pip3 install gunicorn==19.7.1
 
