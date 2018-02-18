@@ -228,11 +228,10 @@ class Command(BaseCommand):
   <p>
     You are receiving this e-mail because you are a user of MoneyJoe, the awesome
     housekeeping tool. If you think you've wrongly received it, or generally
-    don't want to receive mails from us, just click the following link and we
-    won't bother you again with any e-mail:
+    don't want to receive mails from us, just
+    <a href="{optout_url}">click here</a> and we won't bother you again with
+    any e-mail.
   </p>
-
-  <p><a href="{optout_url}">{optout_url}</a></p>
 
   <p>
     <strong>Want to reach out to us?</strong> Go to
@@ -259,11 +258,9 @@ class Command(BaseCommand):
   <p>
     Du erhälst diese E-Mail, weil du ein User von MoneyJoe bist, dem praktischen
     Haushaltsbuch. Wenn du meinst, dass du die Mail fälschlicherweise bekommen
-    hast, oder generell keine Lust auf Mails von uns hast, dann klicke den
-    folgenden Link:
+    hast, oder generell keine Lust auf Mails von uns hast, dann
+    <a href="{optout_url}">klicke hier</a>.
   </p>
-
-  <p><a href="{optout_url}">{optout_url}</a></p>
 
   <p>
     <strong>Hast du uns etwas mitzuteilen?</strong> Gehe zu

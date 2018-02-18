@@ -5,4 +5,4 @@ graphene_django==2.0.0
 django-environ==0.4.4
 html2text==2018.1.9
 pyjwt==1.5.3
-pyOpenSSL==17.5.0
+cryptography==2.1.4
