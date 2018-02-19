@@ -1,30 +1,9 @@
 from . import models
 from . import settings as self_settings
 
-from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import OuterRef, Exists, Q
 import html2text
-import jwt
-
-JWT_PRIVATE_KEY = getattr(settings, "JWT_PRIVATE_KEY")
-JWT_PUBLIC_KEY = getattr(settings, "JWT_PUBLIC_KEY")
-
-class OptOutTokenError(Exception): pass
-
-def create_opt_out_token(user_id):
-  """Create JWT for opting out from receivng e-mails.
-  """
-  token = jwt.encode({"user_id": user_id}, JWT_PRIVATE_KEY, algorithm="RS256")
-  return token
-
-def parse_opt_out_token(token):
-  try:
-    data = jwt.decode(token, JWT_PUBLIC_KEY, algorithm="RS256")
-  except Exception as error:
-    raise OptOutTokenError(str(error))
-
-  return data
 
 def _apply_fragments(body, fragments, custom_fragments=None):
   format_key = lambda key: "{" + key + "}"
@@ -37,15 +16,6 @@ def _apply_fragments(body, fragments, custom_fragments=None):
       body = body.replace(format_key(key), value)
 
   return body
-
-def send_user_mail(user, *args, **kwargs):
-  """Send an e-mail to a user if they didn't opt out.
-
-  Forwards all arguments to `send_template_mail`, except for `recipient_email`,
-  which is taken from the user.
-  """
-  if user.profile.email_opted_out is False:
-    send_template_mail(user.email, *args, **kwargs)
 
 def send_template_mail(
   recipient_email, template_name, locale_name=None, custom_fragments=None

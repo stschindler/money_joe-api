@@ -1,10 +1,10 @@
 from . import settings as self_settings
 from geo.models import Language
 from joetils.helpers import get_client_ip
-from mail.helpers import parse_opt_out_token
-from mail.helpers import send_user_mail, create_opt_out_token
 from registration.helpers import is_registration_count_exceeded
 from registration.models import AccountActivation
+from user_profile.helpers import parse_opt_out_token
+from user_profile.helpers import send_user_mail, create_opt_out_token
 from user_profile.models import UserProfile
 
 from django.contrib.auth.models import User
@@ -110,7 +110,7 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
         # Create the opt out URL.
         opt_out_token = create_opt_out_token(user.id)
         opt_out_url = info.context.build_absolute_uri(
-          reverse("mail_opt_out") +
+          reverse("user_profile_opt_out") +
           "?" + urllib.parse.urlencode({"token": opt_out_token})
         )
 
