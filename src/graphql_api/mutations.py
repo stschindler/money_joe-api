@@ -1,6 +1,7 @@
 from . import settings as self_settings
 from geo.models import Language
-from joetils.helpers import get_client_ip
+from joetils.helpers import get_client_ip, create_api_url
+from registration.helpers import create_activation_token
 from registration.helpers import is_registration_count_exceeded
 from registration.models import AccountActivation
 from user_profile.helpers import parse_opt_out_token
@@ -109,13 +110,19 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
 
         # Create the opt out URL.
         opt_out_token = create_opt_out_token(user.id)
-        opt_out_url = info.context.build_absolute_uri(
+        opt_out_url = create_api_url(
           reverse("user_profile_opt_out") +
           "?" + urllib.parse.urlencode({"token": opt_out_token})
         )
 
+        activation_token = create_activation_token(user.id)
+        activation_url = create_api_url(
+          reverse("registration_activate_account") +
+          "?" + urllib.parse.urlencode({"token": activation_token})
+        )
+
         fragments = {
-          "activation_url": "???",
+          "activation_url": activation_url,
           "optout_url": opt_out_url,
         }
         send_user_mail(user, "registration_activation", locale_name, fragments)

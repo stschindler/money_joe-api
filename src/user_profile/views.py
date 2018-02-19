@@ -33,6 +33,6 @@ class OptOutView(View):
       user.profile.email_opted_out = True
       user.profile.save()
 
-      response = render(request, "mail/opt_out_successful.html")
+      response = render(request, "user_profile/opt_out_successful.html")
 
     return response

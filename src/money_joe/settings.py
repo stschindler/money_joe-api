@@ -12,10 +12,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = env("MJOE_DEBUG", default=False)
 SECRET_KEY = env("MJOE_SECRET_KEY")
 ALLOWED_HOSTS = env.list("MJOE_ALLOWED_HOSTS", default=["*"])
-STATIC_URL = env("MJOE_STATIC_URL", default="/static/")
-STATIC_ROOT = env("MJOE_STATIC_ROOT", default="public/static")
-MEDIA_URL = env("MJOE_MEDIA_URL", default="/media/")
-MEDIA_ROOT = env("MJOE_MEDIA_ROOT", default="public/media")
+
+PROTOCOL = env("MJOE_PROTOCOL", default="https")
+CDN_ENDPOINT = env("MJOE_CDN_ENDPOINT", default="cdn.moneyjoe.io")
+API_ENDPOINT = env("MJOE_API_ENDPOINT", default="api.moneyjoe.io")
+WEB_ENDPOINT = env("MJOE_WEB_ENDPOINT", default="app.moneyjoe.io")
+CDN_ROOT_PATH = env("MJOE_CDN_ROOT_PATH", default="/opt/moneyjoe")
+
+STATIC_URL = env(
+  "MJOE_STATIC_URL", default="{}://{}/static".format(PROTOCOL, CDN_ENDPOINT)
+)
+STATIC_ROOT = \
+  env("MJOE_STATIC_ROOT", default="{}/static".format(CDN_ROOT_PATH))
+
+MEDIA_URL = env(
+  "MJOE_MEDIA_URL",
+  default="{}://{}/media".format(PROTOCOL, CDN_ENDPOINT),
+)
+MEDIA_ROOT = env("MJOE_MEDIA_ROOT", default="{}/media".format(CDN_ROOT_PATH))
+
+CDN_URL = env("MJOE_CDN_URL", default="{}://{}".format(PROTOCOL, CDN_ENDPOINT))
+API_URL = env("MJOE_API_URL", default="{}://{}".format(PROTOCOL, API_ENDPOINT))
+WEB_URL = env("MJOE_WEB_URL", default="{}://{}".format(PROTOCOL, WEB_ENDPOINT))
 
 DATABASES = {"default": env.db("MJOE_DATABASE")}
 

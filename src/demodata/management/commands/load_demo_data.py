@@ -401,7 +401,7 @@ class Command(BaseCommand):
   Your MoneyJoe account was created. In order to use it please activate your
   account and validate your e-mail address by clicking on the following link:
 </p>
-<p><a href="{activation_url}">{activation_url}</a></p>
+<p><a href="{activation_url}">Activate your account now!</a></p>
 <p>Thanks &amp; and have fun!</p>
         """.strip(),
       },
@@ -418,7 +418,7 @@ class Command(BaseCommand):
   nur noch deinen Account aktivieren und deine E-Mail-Adresse bestätigen.
   Klicke dazu einfach auf folgenden Link:
 </p>
-<p><a href="{activation_url}">{activation_url}</a></p>
+<p><a href="{activation_url}">Account jetzt aktivieren!</a></p>
 <p>Danke &amp; viel Spaß!</p>
         """.strip(),
       },
