@@ -94,8 +94,6 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
       locale_name = kwargs["locale_name"]
 
     if len(errors) < 1:
-      code = str(uuid.uuid4())
-
       with transaction.atomic():
         user = User.objects.create_user(
           username=kwargs["email"], email=kwargs["email"],
@@ -103,7 +101,7 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
         )
 
         AccountActivation.objects.create(
-          user=user, code=code, creation_time=timezone.now(), ip=client_ip
+          user=user, creation_time=timezone.now(), ip=client_ip
         )
 
         user_profile = UserProfile.objects.create(user=user, language=language)

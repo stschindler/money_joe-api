@@ -1,6 +1,7 @@
 from account.models import Account
 from currency.models import Currency, CountryCurrency
 from geo.models import Country, Language
+from graphql_api.models import AuthToken
 from household.models import Household, HouseholdMembership
 from journal.models import JournalEntry, JournalEntryTag
 from mail.models import MailSignature, MailFragment, MailTemplate
@@ -442,18 +443,15 @@ class Command(BaseCommand):
     # Account activations.
     account_activations_data = [
       {
-        "user_ref": "stsch", "code": "ABC123XYZ",
-        "creation_time": "2018-01-28T20:50:05+01:00",
+        "user_ref": "stsch", "creation_time": "2018-01-28T20:50:05+01:00",
         "activation_time": "2018-01-28T20:51:31+01:00", "ip": "127.0.0.1",
       },
       {
-        "user_ref": "tisch", "code": "jgsdf8gzms897dfoigj",
-        "creation_time": "2018-01-29T20:50:05+01:00",
+        "user_ref": "tisch", "creation_time": "2018-01-29T20:50:05+01:00",
         "activation_time": "2018-01-29T20:51:31+01:00", "ip": "192.168.1.10",
       },
       {
-        "user_ref": "johndoe", "code": "sdfoigj9825ohgnwjeiolrkjfgowlk",
-        "creation_time": "2018-01-29T12:13:14+01:00",
+        "user_ref": "johndoe", "creation_time": "2018-01-29T12:13:14+01:00",
         "activation_time": None, "ip": "192.168.178.1",
       },
     ]
@@ -461,13 +459,34 @@ class Command(BaseCommand):
     for account_activation_data in account_activations_data:
       user = users[account_activation_data["user_ref"]]
 
-      account_activation = find_or_prepare(
-        AccountActivation, user=user, code=account_activation_data["code"],
-      )
+      account_activation = find_or_prepare(AccountActivation, user=user)
 
       set_field_values(account_activation, account_activation_data)
       account_activation.save()
 
+    # Auth tokens.
+    auth_tokens_data = [
+      {
+        "user_ref": "stsch", "token": "a14fc0dc-fe58-41de-86d4-95943b155f3e",
+        "creation_time": "2018-02-20T11:10:05+01:00", "last_use_time": None,
+      },
+      {
+        "user_ref": "tisch", "token": "83d10fe3-239c-489c-898e-495543219a83",
+        "creation_time": "2018-02-19T11:10:05+01:00",
+        "last_use_time": "2018-02-20T10:02:44+01:00",
+      },
+    ]
+
+    for auth_token_data in auth_tokens_data:
+      user = users[auth_token_data["user_ref"]]
+
+      auth_token = find_or_prepare(AuthToken, token=auth_token_data["token"])
+
+      set_field_values(auth_token, auth_token_data)
+      auth_token.user = user
+      auth_token.save()
+
+    # Tags.
     tags_data = [
       {"name": "Lebensmittel", "household_ref": "Schindler"},
       {"name": "Sprit", "household_ref": "Schindler"},

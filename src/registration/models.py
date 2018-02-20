@@ -7,7 +7,6 @@ class AccountActivation(models.Model):
     User, related_name="account_activations", on_delete=models.CASCADE,
     unique=True,
   )
-  code = models.CharField(max_length=128, unique=True)
   creation_time = models.DateTimeField()
   activation_time = models.DateTimeField(blank=True, null=True, default=None)
   ip = models.CharField(max_length=128)
