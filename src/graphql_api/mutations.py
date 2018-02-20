@@ -1,4 +1,4 @@
-from . import settings as self_settings
+from . import settings as self_settings, models
 from geo.models import Language
 from joetils.helpers import get_client_ip, create_api_url
 from registration.helpers import create_activation_token
@@ -44,6 +44,7 @@ class LoginMutation(graphene.relay.ClientIDMutation):
 
     else:
       token = str(uuid.uuid4())
+      auth_token = models.AuthToken.objects.create(user=user, token=token)
 
     return LoginMutation(token=token, errors=errors)
 
