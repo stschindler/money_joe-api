@@ -1,5 +1,5 @@
 from . import helpers, models
-from joetils.helpers import get_client_ip
+from joetils.helpers import get_client_ip, create_web_url
 
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -39,6 +39,12 @@ class ActivateAccountView(View):
       response = make_error_response("Activation code invalid/not found.")
 
     if response is None:
+      redirect_url = create_web_url()
+      response = render(
+        request, "registration/activation_successful.html",
+        {"redirect_url": redirect_url}
+      )
+
       with transaction.atomic():
         user.is_active = True
         user.save()
@@ -46,7 +52,5 @@ class ActivateAccountView(View):
         activation.activation_time = timezone.now()
         activation.ip = get_client_ip(request)
         activation.save()
-
-        response = render(request, "registration/activation_successful.html")
 
     return response

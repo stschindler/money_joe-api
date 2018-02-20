@@ -21,35 +21,35 @@ def get_relative_url(path):
 
   return path[index:]
 
-def create_web_url(path=""):
+def create_web_url(path="/"):
   assert(
-    settings.WEB_URL.endswith("/") is False and
-    "WEB_URL mustn't start with a slash."
+    settings.WEB_URL.endswith("/") is False,
+    "WEB_URL mustn't end with a slash."
   )
   assert(
-    path.startswith("/") is True and
+    path.startswith("/") is True,
     "path must start with a slash: {}".format(path)
   )
   return settings.WEB_URL + path
 
-def create_api_url(path=""):
+def create_api_url(path="/"):
   assert(
-    settings.API_URL.endswith("/") is False and
-    "API_URL mustn't start with a slash."
+    settings.API_URL.endswith("/") is False,
+    "API_URL mustn't end with a slash."
   )
   assert(
-    path.startswith("/") is True and
+    path.startswith("/") is True,
     "path must start with a slash: {}".format(path)
   )
   return settings.API_URL + path
 
-def create_cdn_url(path=""):
+def create_cdn_url(path="/"):
   assert(
-    settings.CDN_URL.endswith("/") is False and
-    "CDN_URL mustn't start with a slash."
+    settings.CDN_URL.endswith("/") is False,
+    "CDN_URL mustn't end with a slash."
   )
   assert(
-    path.startswith("/") is True and
+    path.startswith("/") is True,
     "path must start with a slash: {}".format(path)
   )
   return settings.CDN_URL + path

@@ -27,13 +27,16 @@ STATIC_ROOT = \
 
 MEDIA_URL = env(
   "MJOE_MEDIA_URL",
-  default="{}://{}/media".format(PROTOCOL, CDN_ENDPOINT),
+  default="{}://{}/media/".format(PROTOCOL, CDN_ENDPOINT),
 )
 MEDIA_ROOT = env("MJOE_MEDIA_ROOT", default="{}/media".format(CDN_ROOT_PATH))
 
-CDN_URL = env("MJOE_CDN_URL", default="{}://{}".format(PROTOCOL, CDN_ENDPOINT))
-API_URL = env("MJOE_API_URL", default="{}://{}".format(PROTOCOL, API_ENDPOINT))
-WEB_URL = env("MJOE_WEB_URL", default="{}://{}".format(PROTOCOL, WEB_ENDPOINT))
+CDN_URL = \
+  env("MJOE_CDN_URL", default="{}://{}".format(PROTOCOL, CDN_ENDPOINT))
+API_URL = \
+  env("MJOE_API_URL", default="{}://{}".format(PROTOCOL, API_ENDPOINT))
+WEB_URL = \
+  env("MJOE_WEB_URL", default="{}://{}".format(PROTOCOL, WEB_ENDPOINT))
 
 DATABASES = {"default": env.db("MJOE_DATABASE")}
 
