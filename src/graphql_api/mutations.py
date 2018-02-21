@@ -1,5 +1,7 @@
-from . import settings as self_settings, models
+from . import settings as self_settings, models, types
+from currency.models import Currency
 from geo.models import Language
+from household.models import Household
 from joetils.helpers import get_client_ip, create_api_url
 from registration.helpers import create_activation_token
 from registration.helpers import is_registration_count_exceeded
@@ -20,6 +22,33 @@ import graphene
 from datetime import timedelta
 import urllib
 import uuid
+
+class CreateHouseholdMutation(graphene.relay.ClientIDMutation):
+  class Input:
+    name = graphene.String(required=True)
+    default_currency = graphene.ID(required=True)
+
+  household = graphene.Field(types.HouseholdNode)
+  errors = graphene.List(graphene.String)
+
+  @classmethod
+  def mutate_and_get_payload(cls, root, info, *args, **kwargs):
+    errors = []
+    household = None
+
+    currency_node = graphene.Node.get_node_from_global_id(
+      info, kwargs["default_currency"], only_type=types.CurrencyNode
+    )
+
+    if currency_node is None:
+      errors.append("Currency not found.")
+
+    if len(errors) < 1:
+      household = Household.objects.create(
+        name=kwargs["name"], default_currency_id=currency_node.id
+      )
+
+    return CreateHouseholdMutation(household=household, errors=errors)
 
 class LoginMutation(graphene.relay.ClientIDMutation):
   class Input:
