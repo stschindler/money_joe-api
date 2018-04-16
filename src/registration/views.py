@@ -25,18 +25,15 @@ class ActivateAccountView(View):
       data = helpers.parse_activation_token(token)
     except helpers.OptOutTokenError:
       traceback.print_exc()
-      response = make_error_response("JWT invalid.")
+      response = make_error_response("Token invalid.")
 
-    user = User.objects.filter(id=data["user_id"]).first()
-    if user is None:
-      response = make_error_response("User not found.")
-
-    activation = models.AccountActivation.objects \
-      .filter(user=user, activation_time=None) \
+    account_activation = models.AccountActivation.objects \
+      .select_related("user") \
+      .filter(code=data, activation_time=None) \
       .first()
 
-    if activation is None:
-      response = make_error_response("Activation code invalid/not found.")
+    if account_activation is None:
+      response = make_error_response("Unused activation token not found.")
 
     if response is None:
       redirect_url = create_web_url()
@@ -45,12 +42,14 @@ class ActivateAccountView(View):
         {"redirect_url": redirect_url}
       )
 
+      user = account_activation.user
+
       with transaction.atomic():
         user.is_active = True
         user.save()
 
-        activation.activation_time = timezone.now()
-        activation.ip = get_client_ip(request)
-        activation.save()
+        account_activation.activation_time = timezone.now()
+        account_activation.ip = get_client_ip(request)
+        account_activation.save()
 
     return response

@@ -1,4 +1,4 @@
-from . import helpers
+from . import helpers, models
 
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -12,24 +12,32 @@ def make_error_response(text, status=400):
 
 class OptOutView(View):
   def get(self, request):
-    token = request.GET.get("token")
     response = None
+    token = request.GET.get("token")
 
     if type(token) is not str:
       response = make_error_response("`token` must be string.")
 
-    try:
-      data = helpers.parse_opt_out_token(token)
-    except helpers.OptOutTokenError:
-      traceback.print_exc()
-      response = make_error_response("JWT invalid.")
+    if response is None:
+      parsed_token = None
 
-    user = User.objects.filter(id=data["user_id"]).first()
-
-    if user is None:
-      response = make_error_response("User not found.")
+      try:
+        parsed_token = helpers.parse_opt_out_token(token)
+      except helpers.OptOutTokenError:
+        traceback.print_exc()
+        response = make_error_response("Token invalid.")
 
     if response is None:
+      user_profile = models.UserProfile.objects \
+        .select_related("user") \
+        .filter(email_opt_out_code=parsed_token) \
+        .first()
+
+      if user_profile is None:
+        response = make_error_response("User profile not found.")
+
+    if response is None:
+      user = user_profile.user
       user.profile.email_opted_out = True
       user.profile.save()
 

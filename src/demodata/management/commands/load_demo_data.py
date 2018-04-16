@@ -445,14 +445,17 @@ class Command(BaseCommand):
       {
         "user_ref": "stsch", "creation_time": "2018-01-28T20:50:05+01:00",
         "activation_time": "2018-01-28T20:51:31+01:00", "ip": "127.0.0.1",
+        "code": "42fb098d-3008-4b39-b294-d02efca2dabb",
       },
       {
         "user_ref": "tisch", "creation_time": "2018-01-29T20:50:05+01:00",
         "activation_time": "2018-01-29T20:51:31+01:00", "ip": "192.168.1.10",
+        "code": "4f68e0f6-2824-45e7-98be-059f80aebde7",
       },
       {
         "user_ref": "johndoe", "creation_time": "2018-01-29T12:13:14+01:00",
         "activation_time": None, "ip": "192.168.178.1",
+        "code": "a199018c-0cf3-4042-9abf-57bfc44bc3b4",
       },
     ]
 
@@ -613,11 +616,18 @@ class Command(BaseCommand):
 
     # User profiles.
     user_profiles_data = [
-      {"user_ref": "stsch", "language_ref": "de_de", "email_opted_out": False},
-      {"user_ref": "tisch", "language_ref": "de_de", "email_opted_out": False},
+      {
+        "user_ref": "stsch", "language_ref": "de_de", "email_opted_out": False,
+        "email_opt_out_code": "604c3e62-6566-40f5-8e45-c5dccb4416fa",
+      },
+      {
+        "user_ref": "tisch", "language_ref": "de_de", "email_opted_out": False,
+        "email_opt_out_code": "a7f6cb2d-e475-4415-b47c-b0ef0bebf66c",
+      },
       {
         "user_ref": "johndoe", "language_ref": "en_us",
         "email_opted_out": True,
+        "email_opt_out_code": "9655a637-052f-4927-9dab-3476df614612",
       },
     ]
 

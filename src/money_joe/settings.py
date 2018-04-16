@@ -20,7 +20,7 @@ WEB_ENDPOINT = env("MJOE_WEB_ENDPOINT", default="app.moneyjoe.io")
 CDN_ROOT_PATH = env("MJOE_CDN_ROOT_PATH", default="/opt/moneyjoe")
 
 STATIC_URL = env(
-  "MJOE_STATIC_URL", default="{}://{}/static".format(PROTOCOL, CDN_ENDPOINT)
+  "MJOE_STATIC_URL", default="{}://{}/static/".format(PROTOCOL, CDN_ENDPOINT)
 )
 STATIC_ROOT = \
   env("MJOE_STATIC_ROOT", default="{}/static".format(CDN_ROOT_PATH))
@@ -39,9 +39,6 @@ WEB_URL = \
   env("MJOE_WEB_URL", default="{}://{}".format(PROTOCOL, WEB_ENDPOINT))
 
 DATABASES = {"default": env.db("MJOE_DATABASE")}
-
-JWT_PRIVATE_KEY = base64.b64decode(env("MJOE_JWT_PRIVATE_KEY"))
-JWT_PUBLIC_KEY = base64.b64decode(env("MJOE_JWT_PUBLIC_KEY"))
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"

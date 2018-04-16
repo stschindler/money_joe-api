@@ -130,20 +130,21 @@ class RegisterAccountMutation(graphene.relay.ClientIDMutation):
           password=kwargs["password"], is_active=False,
         )
 
-        AccountActivation.objects.create(
-          user=user, creation_time=timezone.now(), ip=client_ip
+        opt_out_token = create_opt_out_token(user.id)
+        user_profile = UserProfile.objects.create(
+          user=user, language=language, email_opt_out_code=opt_out_token
         )
 
-        user_profile = UserProfile.objects.create(user=user, language=language)
-
-        # Create the opt out URL.
-        opt_out_token = create_opt_out_token(user.id)
         opt_out_url = create_api_url(
           reverse("user_profile_opt_out") +
           "?" + urllib.parse.urlencode({"token": opt_out_token})
         )
 
         activation_token = create_activation_token(user.id)
+        AccountActivation.objects.create(
+          user=user, creation_time=timezone.now(), ip=client_ip,
+          code=activation_token,
+        )
         activation_url = create_api_url(
           reverse("registration_activate_account") +
           "?" + urllib.parse.urlencode({"token": activation_token})

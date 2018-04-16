@@ -10,6 +10,7 @@ class AccountActivation(models.Model):
   creation_time = models.DateTimeField()
   activation_time = models.DateTimeField(blank=True, null=True, default=None)
   ip = models.CharField(max_length=128)
+  code = models.TextField()
 
   def save(self, *args, **kwargs):
     if self.pk is None and self.creation_time is None:

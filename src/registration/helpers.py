@@ -3,25 +3,16 @@ from registration.models import AccountActivation
 
 from django.conf import settings
 from django.utils import timezone
-import jwt
 
 from datetime import timedelta
-
-JWT_PRIVATE_KEY = getattr(settings, "JWT_PRIVATE_KEY")
-JWT_PUBLIC_KEY = getattr(settings, "JWT_PUBLIC_KEY")
+import uuid
 
 def create_activation_token(user_id):
-  """Create JWT for activating user account."""
-  token = jwt.encode({"user_id": user_id}, JWT_PRIVATE_KEY, algorithm="RS256")
-  return token
+  """Create token for activating user account."""
+  return str(uuid.uuid4())
 
 def parse_activation_token(token):
-  try:
-    data = jwt.decode(token, JWT_PUBLIC_KEY, algorithm="RS256")
-  except Exception as error:
-    raise OptOutTokenError(str(error))
-
-  return data
+  return token
 
 def is_registration_count_exceeded(
   ip_address, max_count=self_settings.MAX_REGISTRATION_COUNT,

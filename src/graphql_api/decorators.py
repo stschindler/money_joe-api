@@ -63,4 +63,3 @@ def limited_pagination(func):
     return result
 
   return wrapper
-

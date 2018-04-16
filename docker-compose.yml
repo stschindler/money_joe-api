@@ -20,4 +20,11 @@ services:
       - MJOE_DEBUG=1
       - MJOE_SECRET_KEY=6c68c570-6f43-4590-8c16-38a257f085ee
       - MJOE_DATABASE=postgres://postgres:password@postgres/postgres
+      - MJOE_ROOT_PATH=./cdn/
+      - MJOE_PROTOCOL=http
+      - MJOE_CDN_ENDPOINT=127.0.0.1:8000
+      - MJOE_API_ENDPOINT=127.0.0.1:8000
+      - MJOE_WEB_ENDPOINT=127.0.0.1:8080
+      - MJOE_STATIC_URL=/static/
+      - MJOE_MEDIA_URL=/media/
       - PYTHONUNBUFFERED=1
